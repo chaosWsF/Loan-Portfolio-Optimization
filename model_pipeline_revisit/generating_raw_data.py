@@ -51,10 +51,11 @@ num_transformer = Pipeline(steps=[
     ('masking', SimpleImputer(strategy='constant', fill_value=0.)),
 ])
 preprocessor = ColumnTransformer(transformers=[
-    ('num_col', num_transformer, used_cols),
+    ('num_col', num_transformer, num_cols),
 ])
 
 data[num_cols] = preprocessor.fit_transform(data)
 
 
+config.PATH_WORKING_DIR.mkdir(exist_ok=True)
 data.to_parquet(config.PATH_RAW_DATA)
