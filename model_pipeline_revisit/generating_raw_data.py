@@ -8,7 +8,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 
-import model_pipeline_revisit.config as config
+import config as config
 
 
 data_path = Path('/home/c44406/datasets/atb_uofa/loan_portfolio/') / 'datasetv7*.csv'
