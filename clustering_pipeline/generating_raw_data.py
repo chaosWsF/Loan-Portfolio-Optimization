@@ -43,7 +43,10 @@ data = ddf.compute()    # compile to pd.DataFrame
 logger.info('read csv files')
 
 data.drop(columns=['BEACON', 'dunning_level'], inplace=True)
-logger.info(f'drop columns with 90% missing values')
+logger.info(f'drop columns with missing values > 90%')
+
+data.drop(columns=['syndicated_loan', 'trend_code'], inplace=True)
+logger.info(f'drop imbalanced categorical columns')
 
 start_date = '2013-01-31'
 end_date = '2021-12-31'
