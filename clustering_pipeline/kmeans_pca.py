@@ -4,67 +4,92 @@ import numpy as np
 import pandas as pd
 
 from pathlib import Path
-from time_series_split import generate_datasets
 from data_preprocessing import DataPreprocessor
 from sklearn.pipeline import Pipeline
-# from sklearn.preprocessing import StandardScaler, RobustScaler
-from sklearn.decomposition import PCA, IncrementalPCA
-from sklearn.cluster import KMeans, MiniBatchKMeans
-from sklearn.metrics import brier_score_loss
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 
 
-def mth_diff(date1: str, date2: str) -> int:
+class Model:
+    def __init__(self, parameters) -> None:
+        """
+        parameters: dict('PCA': dict(...), 'KMeans': dict(...), ...)
+        """
+        self.logger = logging.getLogger(__name__)
+        self.param = parameters
+    
+    def construct(self):
+        pca_param = self.param['PCA']
+        kmeans_param = self.param['KMeans']
+
+        self.ppl = Pipeline([
+            ('PCA', PCA(**pca_param)),
+            # ('scaling', StandardScaler()),
+            ('KMeans', KMeans(**kmeans_param)),
+        ])
+        self.logger.info('initialize the model pipeline')
+
+    def fit(self, X):
+        """
+        X: array-like
+        """
+        self.construct()
+        self.ppl.fit(X)
+        self.logger.info('fitting')
+    
+    def predict(self, X):
+        """"
+        fitting before predicting
+        """
+        labels = self.ppl.predict(X)
+        self.logger('getting labels')
+        return labels
+
+
+def generate_labels(data, train_period=config.TRAIN_PERIOD, test_period=config.TEST_PERIOD):
     """
-    date1, date2: YYYY-MM-DD
+    data: pd.DataFrame; train_period, test_period: tuple(str, str)
     """
-    date1 = np.datetime64(date1[:-3])
-    date2 = np.datetime64(date2[:-3])
-    return ((date2 - date1).astype(int) + 1)
-
-
-if __name__ == '__main__':
     working_dir = config.PATH_WORKING_DIR
+    working_dir.mkdir(exist_ok=True)
+
     logging.basicConfig(
         level=logging.INFO,
         format='[%(levelname)s] %(asctime)s - %(name)s - %(funcName)s: l%(lineno)d: %(message)s',
         handlers=[
-            logging.FileHandler(working_dir / Path('kmeans_rolling.log')),
+            logging.FileHandler(working_dir / Path('kmeans_pca.log')),
             logging.StreamHandler()
         ]
     )
     logger = logging.getLogger(__name__)
 
     date_id = config.DATE_COLUMN
-    train_period = config.TRAIN_PERIOD
-    test_period = config.TEST_PERIOD
+
     start_date = train_period[0]
     end_date = test_period[1]
-
-    loans_data = pd.read_parquet(config.PATH_RAW_DATA)
-    loans_data = loans_data[(loans_data[date_id] >= start_date) & (loans_data[date_id] <= end_date)]
-    logger.info('load loans data')
+    data = data[(data[date_id] >= start_date) & (data[date_id] <= end_date)]
 
     Preprocessor = DataPreprocessor()
-    data, features = Preprocessor.transform(loans_data)
-
-    training_months = mth_diff(start_date, train_period[1])
-    testing_months = mth_diff(test_period[0], end_date)
-
-    datasets = generate_datasets(data, 'cal_day', start_date, end_date, training_months, testing_months)
-
-    # TODO: add rolling kmeans by fixing centers. try to recursively use previous center but PCA needs an online version
-    train, test = datasets[0]
-    data = train.append(test).reset_index(drop=True)
-
-    models = Pipeline([
-        ('PCA', PCA(**config.PCA_PARAM)),
-        # ('scaling', StandardScaler()),
-        ('KMeans', KMeans(**config.KMEANS_PARAM)),
-    ])
-
-    models.fit(train[features].to_numpy())
-    labels = models.predict(data[features].to_numpy())
+    df, features = Preprocessor.transform(data)
     
-    result_id = config.KMEANS_PARAM['n_clusters']
+    train_idx = df[date_id].between(*train_period, inclusive='both')
+    train = df.loc[train_idx, features].to_numpy()
+    test_idx = df[date_id].between(*test_period, inclusive='both')
+    test = df.loc[test_idx, features].to_numpy()
+    logger.info(f'split train and test with the size of {len(train)} and {len(test)}')
+
+    model = Model(config.MODEL_PARAM)
+    model.fit(train)
+
+    X = np.append(train, test, axis=0)
+    labels = model.predict(X)
+
+    return labels
+
+
+if __name__ == '__main__':
+    loans_data = pd.read_parquet(config.PATH_RAW_DATA)
+    labels = generate_labels(loans_data)
     loans_data[config.LABEL_COLUMN] = labels
-    loans_data.to_csv(working_dir / f'cluster_labels_{result_id}.csv')
+    loans_data.to_csv(config.PATH_KMEANS_RESULT)

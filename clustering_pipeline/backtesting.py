@@ -2,6 +2,8 @@ import logging
 import pandas as pd
 import numpy as np
 
+from sklearn.metrics import brier_score_loss
+
 
 def generate_datasets(data, col, start_date, end_date, train_size, test_size):
     # TODO: add initial train period
@@ -20,3 +22,12 @@ def generate_datasets(data, col, start_date, end_date, train_size, test_size):
         datasets.append((train_data, test_data))
     
     return datasets
+
+
+def mth_diff(date1: str, date2: str) -> int:
+    """
+    date1, date2: YYYY-MM-DD
+    """
+    date1 = np.datetime64(date1[:-3])
+    date2 = np.datetime64(date2[:-3])
+    return ((date2 - date1).astype(int) + 1)

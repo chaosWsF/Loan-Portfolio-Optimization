@@ -33,14 +33,17 @@ ID_COLUMNS = ['cal_day', 'bus_ptnr_group']
 BASE_LABEL_COLUMN = 'impaired'
 LABEL_COLUMN = 'kmeans_label'
 
-# Experiment
-EXPERIMENT_NAME = 'train_with_pipelines'
+# experiment settings
+TRAIN_PERIOD = ('2016-01-31', '2020-12-31')
+TEST_PERIOD = ('2021-01-31', '2021-12-31')
 
-INITIAL_TRAIN_PERIOD = ('2016-01-31', '2018-12-31')
+INITIAL_TRAIN_PERIOD = ('2016-01-31', '2018-12-31')    # for backtesing or walk-forward validation
+TEST_PERIOD_LENGTH = 12    # months
 
-TRAIN_PERIOD = ('2016-01-31', '2020-08-31')
-TEST_PERIOD = ('2020-09-30', '2021-12-31')
+MODEL_PARAM = {
+    'PCA': {'n_components': 0.95},
+    'KMeans': {'n_clusters': 10}
+}
 
-PCA_PARAM = {'n_components': 0.95}
-KMEANS_PARAM = {'n_clusters': 10}
-
+KMEANS_ID = MODEL_PARAM['KMeans']['n_clusters']
+PATH_KMEANS_RESULT = PATH_WORKING_DIR / Path(f'kmeans_with_{KMEANS_ID}_centers.csv')
