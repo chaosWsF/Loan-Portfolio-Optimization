@@ -41,8 +41,8 @@ INITIAL_TRAIN_PERIOD = ('2016-01-31', '2018-12-31')    # for backtesing or walk-
 TEST_PERIOD_LENGTH = 12    # months
 
 MODEL_PARAM = {
-    'PCA': {'n_components': 0.95},
-    'KMeans': {'n_clusters': 10}
+    'PCA': {'n_components': 0.95, 'random_state': None},
+    'KMeans': {'n_clusters': 10, 'random_state': None}
 }
 
 KMEANS_ID = MODEL_PARAM['KMeans']['n_clusters']
