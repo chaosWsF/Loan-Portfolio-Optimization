@@ -28,7 +28,7 @@ class Model:
             # ('scaling', StandardScaler()),
             ('KMeans', KMeans(**kmeans_param)),
         ])
-        self.logger.info('initialize the model pipeline')
+        self.logger.info('initialize the model pipeline: PCA and KMeans')
 
     def fit(self, X):
         """
@@ -51,6 +51,26 @@ def generate_labels(data, train_period, test_period):
     """
     data: pd.DataFrame; train_period, test_period: tuple(str, str)
     """
+    date_id = config.DATE_COLUMN
+
+    Preprocessor = DataPreprocessor()
+    df, features = Preprocessor.transform(data)
+    
+    train_idx = df[date_id].between(*train_period, inclusive='both')
+    train = df.loc[train_idx, features].to_numpy()
+    test_idx = df[date_id].between(*test_period, inclusive='both')
+    test = df.loc[test_idx, features].to_numpy()
+    logging.getLogger(__name__).info(f'split train and test with the size of {len(train)} and {len(test)}')
+
+    model = Model(config.MODEL_PARAM)
+    model.fit(train)
+
+    X = np.append(train, test, axis=0)
+    labels = model.predict(X)
+    return labels
+
+
+if __name__ == '__main__':
     working_dir = config.PATH_WORKING_DIR
     working_dir.mkdir(exist_ok=True)
 
@@ -65,28 +85,6 @@ def generate_labels(data, train_period, test_period):
     logger = logging.getLogger(__name__)
 
     date_id = config.DATE_COLUMN
-
-    Preprocessor = DataPreprocessor()
-    df, features = Preprocessor.transform(data)
-    
-    train_idx = df[date_id].between(*train_period, inclusive='both')
-    train = df.loc[train_idx, features].to_numpy()
-    test_idx = df[date_id].between(*test_period, inclusive='both')
-    test = df.loc[test_idx, features].to_numpy()
-    logger.info(f'split train and test with the size of {len(train)} and {len(test)}')
-
-    model = Model(config.MODEL_PARAM)
-    model.fit(train)
-
-    X = np.append(train, test, axis=0)
-    labels = model.predict(X)
-
-    return labels
-
-
-if __name__ == '__main__':
-
-    date_id = config.DATE_COLUMN
     train_period = config.TRAIN_PERIOD
     test_period = config.TEST_PERIOD
     start_date = train_period[0]
@@ -96,5 +94,6 @@ if __name__ == '__main__':
     loans_data = loans_data[(loans_data[date_id] >= start_date) & (loans_data[date_id] <= end_date)]
 
     labels = generate_labels(loans_data, train_period, test_period)
-    loans_data[config.LABEL_COLUMN] = labels
-    loans_data.to_csv(config.PATH_KMEANS_RESULT)
+    loans_data[config.KMEANS_LABEL_COLUMN] = labels
+    loans_data.to_csv(config.PATH_KMEANS_RESULT, index=False)
+    logger.info('store results')

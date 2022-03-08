@@ -31,18 +31,18 @@ COLUMN_TO_IMPUTE_MEDIAN = ['days_in_arrears', 'dunning_level_code']
 ID_COLUMNS = ['cal_day', 'bus_ptnr_group']
 
 BASE_LABEL_COLUMN = 'impaired'
-LABEL_COLUMN = 'kmeans_label'
+KMEANS_LABEL_COLUMN = 'kmeans_label'
 
 # experiment settings
 TRAIN_PERIOD = ('2016-01-31', '2020-12-31')
 TEST_PERIOD = ('2021-01-31', '2021-12-31')
 
-INITIAL_TRAIN_PERIOD = ('2016-01-31', '2018-12-31')    # for backtesing or walk-forward validation
+INITIAL_TRAIN_PERIOD = ('2016-01-31', '2017-12-31')    # for backtesing or walk-forward validation
 TEST_PERIOD_LENGTH = 12    # months
 
 MODEL_PARAM = {
     'PCA': {'n_components': 0.95, 'random_state': None},
-    'KMeans': {'n_clusters': 10, 'random_state': None}
+    'KMeans': {'n_clusters': 20, 'random_state': None}
 }
 
 KMEANS_ID = MODEL_PARAM['KMeans']['n_clusters']
