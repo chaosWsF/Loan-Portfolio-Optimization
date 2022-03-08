@@ -87,12 +87,14 @@ def generate_labels(data, train_period, test_period):
 if __name__ == '__main__':
 
     date_id = config.DATE_COLUMN
-    start_date = config.TRAIN_PERIOD[0]
-    end_date = config.TEST_PERIOD[1]
+    train_period = config.TRAIN_PERIOD
+    test_period = config.TEST_PERIOD
+    start_date = train_period[0]
+    end_date = test_period[1]
 
     loans_data = pd.read_parquet(config.PATH_RAW_DATA)
     loans_data = loans_data[(loans_data[date_id] >= start_date) & (loans_data[date_id] <= end_date)]
 
-    labels = generate_labels(loans_data)
+    labels = generate_labels(loans_data, train_period, test_period)
     loans_data[config.LABEL_COLUMN] = labels
     loans_data.to_csv(config.PATH_KMEANS_RESULT)
