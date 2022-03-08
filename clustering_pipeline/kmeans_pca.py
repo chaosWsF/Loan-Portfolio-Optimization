@@ -70,7 +70,7 @@ def generate_labels(data, train_period, test_period):
     return labels
 
 
-if __name__ == '__main__':
+def mk_env(start_date, end_date, logging_file):
     working_dir = config.PATH_WORKING_DIR
     working_dir.mkdir(exist_ok=True)
 
@@ -78,20 +78,25 @@ if __name__ == '__main__':
         level=logging.INFO,
         format='[%(levelname)s] %(asctime)s - %(name)s - %(funcName)s: l%(lineno)d: %(message)s',
         handlers=[
-            logging.FileHandler(working_dir / Path('kmeans_pca.log')),
+            logging.FileHandler(working_dir / Path(logging_file)),
             logging.StreamHandler()
         ]
     )
-    logger = logging.getLogger(__name__)
-
-    date_id = config.DATE_COLUMN
-    train_period = config.TRAIN_PERIOD
-    test_period = config.TEST_PERIOD
-    start_date = train_period[0]
-    end_date = test_period[1]
 
     loans_data = pd.read_parquet(config.PATH_RAW_DATA)
-    loans_data = loans_data[(loans_data[date_id] >= start_date) & (loans_data[date_id] <= end_date)]
+    selected_dates = loans_data[config.DATE_COLUMN].between(start_date, end_date, inclusive='both')
+    loans_data = loans_data[selected_dates]
+
+    return loans_data
+
+
+if __name__ == '__main__':
+    train_period = config.TRAIN_PERIOD
+    test_period = config.TEST_PERIOD
+
+    loans_data = mk_env(train_period[0], test_period[1], 'kmeans_pca.log')
+
+    logger = logging.getLogger(__name__)
 
     labels = generate_labels(loans_data, train_period, test_period)
     loans_data[config.KMEANS_LABEL_COLUMN] = labels

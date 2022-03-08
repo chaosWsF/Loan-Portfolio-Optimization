@@ -1,7 +1,4 @@
 from pathlib import Path
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-from sqlalchemy import DATE
 
 
 # paths

@@ -1,6 +1,4 @@
 import logging
-
-from bleach import clean
 import config as config
 import numpy as np
 import pandas as pd
