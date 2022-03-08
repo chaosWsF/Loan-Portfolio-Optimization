@@ -1,7 +1,9 @@
 import logging
+
+from bleach import clean
 import config as config
 import numpy as np
-# import pandas as pd
+import pandas as pd
 # import category_encoders as ce
 
 from sklearn.compose import ColumnTransformer
@@ -14,10 +16,11 @@ from sklearn.base import BaseEstimator, TransformerMixin
 class DataPreprocessor:
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
+        self.date_col = config.DATE_COLUMN
         self.non_feat = config.NON_FEATURE_COLUMNS
         self.cat_feat = config.CATEGORICAL_FEATURES
     
-    def preprocess(self, data):
+    def transform(self, data):
         """
         data: pd.DataFrame
         """
@@ -47,10 +50,13 @@ class DataPreprocessor:
         ], remainder='drop', n_jobs=-1)
 
         cleaned_data = transformer.fit_transform(data)
-        feat_cols = col_median + col_const + cat_cols
         logger.info('impute and scale data')
+        
+        feat_cols = col_median + col_const + cat_cols
+        df = pd.DataFrame(cleaned_data, columns=feat_cols)
+        df[self.date_col] = data[self.date_col]
 
-        return cleaned_data, feat_cols
+        return df, feat_cols
 
 
 class catEncoder(BaseEstimator, TransformerMixin):

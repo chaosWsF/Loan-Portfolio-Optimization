@@ -1,6 +1,7 @@
 from pathlib import Path
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from sqlalchemy import DATE
 
 
 # paths
@@ -23,6 +24,8 @@ NON_FEATURE_COLUMNS = [
 
 CATEGORICAL_FEATURES = ['trend_code', 'dunning_level', 'syndicated_loan']
 
+DATE_COLUMN = 'cal_day'
+
 COLUMN_TO_IMPUTE_MEDIAN = ['days_in_arrears', 'dunning_level_code']
 
 ID_COLUMNS = ['cal_day', 'bus_ptnr_group']
@@ -33,23 +36,11 @@ LABEL_COLUMN = 'kmeans_label'
 # Experiment
 EXPERIMENT_NAME = 'train_with_pipelines'
 
-INITIAL_TRAIN_PERIOD = ('2013-03-31', '2015-03-01')
+INITIAL_TRAIN_PERIOD = ('2016-01-31', '2018-12-31')
 
-TRAIN_PERIOD = ('2013-04-01', '2018-12-31')
-TEST_PERIOD = ('2019-04-01', '2019-12-31')
+TRAIN_PERIOD = ('2016-01-31', '2020-08-31')
+TEST_PERIOD = ('2020-09-30', '2021-12-31')
 
-# Models
-pca = {
-    'ESTIMATOR': PCA(),
-    'PARAMS': {
-        'n_components': 0.95
-    }
-}
-
-kmeans = {
-    'ESTIMATOR': KMeans(),
-    'PARAMS': {
-        'n_clusters': 10
-    }
-}
+PCA_PARAM = {'n_components': 0.95}
+KMEANS_PARAM = {'n_clusters': 10}
 
