@@ -48,7 +48,7 @@ class DataPreprocessor:
 
         cleaned_data = transformer.fit_transform(data)
         feat_cols = col_median + col_const + cat_cols
-        logger.info('apply mixed strategy for missing values')
+        logger.info('impute and scale data')
 
         return cleaned_data, feat_cols
 
