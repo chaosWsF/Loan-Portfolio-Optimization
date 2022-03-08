@@ -1,11 +1,7 @@
 import logging
-
-from soupsieve import select
 import config as config
 import numpy as np
-import pandas as pd
 
-from pathlib import Path
 from kmeans_pca import generate_labels, mk_env
 from sklearn.metrics import brier_score_loss
 
