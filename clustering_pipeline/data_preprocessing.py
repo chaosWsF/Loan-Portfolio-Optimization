@@ -54,7 +54,7 @@ class DataPreprocessor:
         
         feat_cols = col_median + col_const + cat_cols
         df = pd.DataFrame(cleaned_data, columns=feat_cols)
-        df[self.date_col] = data[self.date_col]
+        df[self.date_col] = data[self.date_col].values
 
         return df, feat_cols
 

@@ -43,11 +43,11 @@ class Model:
         fitting before predicting
         """
         labels = self.ppl.predict(X)
-        self.logger('getting labels')
+        self.logger.info('getting labels')
         return labels
 
 
-def generate_labels(data, train_period=config.TRAIN_PERIOD, test_period=config.TEST_PERIOD):
+def generate_labels(data, train_period, test_period):
     """
     data: pd.DataFrame; train_period, test_period: tuple(str, str)
     """
@@ -65,10 +65,6 @@ def generate_labels(data, train_period=config.TRAIN_PERIOD, test_period=config.T
     logger = logging.getLogger(__name__)
 
     date_id = config.DATE_COLUMN
-
-    start_date = train_period[0]
-    end_date = test_period[1]
-    data = data[(data[date_id] >= start_date) & (data[date_id] <= end_date)]
 
     Preprocessor = DataPreprocessor()
     df, features = Preprocessor.transform(data)
@@ -89,7 +85,14 @@ def generate_labels(data, train_period=config.TRAIN_PERIOD, test_period=config.T
 
 
 if __name__ == '__main__':
+
+    date_id = config.DATE_COLUMN
+    start_date = config.TRAIN_PERIOD[0]
+    end_date = config.TEST_PERIOD[1]
+
     loans_data = pd.read_parquet(config.PATH_RAW_DATA)
+    loans_data = loans_data[(loans_data[date_id] >= start_date) & (loans_data[date_id] <= end_date)]
+
     labels = generate_labels(loans_data)
     loans_data[config.LABEL_COLUMN] = labels
     loans_data.to_csv(config.PATH_KMEANS_RESULT)
