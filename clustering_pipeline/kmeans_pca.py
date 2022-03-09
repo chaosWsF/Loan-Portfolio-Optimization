@@ -28,7 +28,7 @@ class Model:
             # ('scaling', StandardScaler()),
             ('KMeans', KMeans(**kmeans_param)),
         ])
-        self.logger.info('initialize the model pipeline: PCA and KMeans')
+        self.logger.info(f"initialize the model pipeline: KMeans {kmeans_param['n_clusters']}")
 
     def fit(self, X):
         """
