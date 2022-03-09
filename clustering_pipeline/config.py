@@ -41,8 +41,8 @@ TEST_PERIOD_LENGTH = 12    # months
 MODEL_PARAM = {
     'PCA': {'n_components': 0.95},
     'KMeans': {'n_clusters': 20},
-    'KMedoids': {'n_medoids': 10}
+    'KMedoids': {'n_clusters': 20}
 }
 
 PATH_KMEANS_RESULT = PATH_WORKING_DIR / Path(f"kmeans_with_{MODEL_PARAM['KMeans']['n_clusters']}_centers.csv")
-PATH_PAM_RESULT = PATH_WORKING_DIR / Path(f"kmeans_with_{MODEL_PARAM['KMedoids']['n_medoids']}_centers.csv")
+PATH_PAM_RESULT = PATH_WORKING_DIR / Path(f"kmedoids_with_{MODEL_PARAM['KMedoids']['n_clusters']}_medoids.csv")

@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from sklearn_extra.cluster import KMedoids
 from kmedoids_wrapper import BanditPAM
 
 
@@ -27,17 +28,15 @@ class Model:
         clustering_param = self.param[self.method]
         if self.method == 'KMeans':
             cluster = KMeans(**clustering_param)
-            cluster_id = clustering_param['n_clusters']
         elif self.method == 'KMedoids':
-            cluster = BanditPAM(**clustering_param)
-            cluster_id = clustering_param['n_medoids']
+            cluster = KMedoids(**clustering_param)
 
         self.ppl = Pipeline([
             ('PCA', PCA(**pca_param)),
             # ('scaling', StandardScaler()),
             ('clustering', cluster)
         ])
-        self.logger.info(f"initialize {self.method} {cluster_id}")
+        self.logger.info(f"initialize {self.method} {clustering_param['n_clusters']}")
 
     def fit(self, X):
         """
@@ -64,6 +63,7 @@ def generate_labels(method, data, train_period, test_period):
 
     Preprocessor = DataPreprocessor()
     df, features = Preprocessor.transform(data)
+    # TODO: add save check for preprocessed data
     
     train_idx = df[date_id].between(*train_period, inclusive='both')
     train = df.loc[train_idx, features].to_numpy()

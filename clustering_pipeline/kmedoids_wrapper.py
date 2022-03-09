@@ -1,4 +1,5 @@
 from banditpam import KMedoids
+from sklearn.base import BaseEstimator, ClusterMixin
 
 
 class BanditPAM:
@@ -14,14 +15,14 @@ class BanditPAM:
             'swap_confidence': swap_confidence
         }
 
-    def fit(self, X, **kwargs):
+    def fit(self, X, y=None):
         """
         X: numpy.ndarray[numpy.float32]
         """
         self.cluster = KMedoids(**self.params)
-        self.cluster.fit(X, 'L2', **kwargs)
+        self.cluster.fit(X, 'L2')
 
-    def predict(self, X):
-        self.fit(X)
+    def predict(self, X):    # FIXME get fitted model's predictions
+        # self.fit(X)
         labels = self.cluster.labels
         return labels
