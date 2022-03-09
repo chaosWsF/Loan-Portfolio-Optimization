@@ -32,7 +32,7 @@ def model_eval(method, data, train_period, test_period):
         target = config.KMEANS_LABEL_COLUMN
     elif method == 'KMedoids':
         target = config.PAM_LABEL_COLUMN
-    else:    # TODO add new methods
+    else:    # TODO other methods
         pass
 
     train_start, train_end = train_period

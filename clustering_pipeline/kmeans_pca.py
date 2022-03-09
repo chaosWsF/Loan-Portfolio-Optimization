@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from kmedoids_wrapper import BanditPAM
 
 
 class Model:
@@ -27,7 +28,7 @@ class Model:
         if self.method == 'KMeans':
             cluster = KMeans(**clustering_param)
         elif self.method == 'KMedoids':
-            pass    # TODO add estimator
+            cluster = BanditPAM(**clustering_param)
 
         self.ppl = Pipeline([
             ('PCA', PCA(**pca_param)),

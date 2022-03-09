@@ -39,9 +39,9 @@ INITIAL_TRAIN_PERIOD = ('2016-01-31', '2017-12-31')    # for backtesing or walk-
 TEST_PERIOD_LENGTH = 12    # months
 
 MODEL_PARAM = {
-    'PCA': {'n_components': 0.95, 'random_state': None},
-    'KMeans': {'n_clusters': 20, 'random_state': None},
-    'KMedoids': {'n_medoids': 10}    # TODO add parameters
+    'PCA': {'n_components': 0.95},
+    'KMeans': {'n_clusters': 20},
+    'KMedoids': {'n_medoids': 10}
 }
 
 PATH_KMEANS_RESULT = PATH_WORKING_DIR / Path(f"kmeans_with_{MODEL_PARAM['KMeans']['n_clusters']}_centers.csv")
