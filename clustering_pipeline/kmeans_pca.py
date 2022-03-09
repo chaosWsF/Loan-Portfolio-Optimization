@@ -98,7 +98,8 @@ def mk_env(start_date, end_date, logging_file):
 
 
 if __name__ == '__main__':
-    method = 'KMeans'
+    # method = 'KMeans'
+    method = 'KMedoids'
 
     train_period = config.TRAIN_PERIOD
     test_period = config.TEST_PERIOD
