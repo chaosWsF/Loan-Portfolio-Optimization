@@ -27,15 +27,17 @@ class Model:
         clustering_param = self.param[self.method]
         if self.method == 'KMeans':
             cluster = KMeans(**clustering_param)
+            cluster_id = clustering_param['n_clusters']
         elif self.method == 'KMedoids':
             cluster = BanditPAM(**clustering_param)
+            cluster_id = clustering_param['n_medoids']
 
         self.ppl = Pipeline([
             ('PCA', PCA(**pca_param)),
             # ('scaling', StandardScaler()),
             ('clustering', cluster)
         ])
-        self.logger.info(f"initialize {self.method} with n_clusters={clustering_param['n_clusters']}")
+        self.logger.info(f"initialize {self.method} {cluster_id}")
 
     def fit(self, X):
         """
