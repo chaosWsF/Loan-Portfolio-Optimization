@@ -34,14 +34,18 @@ def model_eval(data, train_period, test_period):
     test_start, test_end = test_period
 
     labels = generate_labels(data, train_period, test_period)
-    data = data[data[date_id].between(train_start, test_end, inclusive='both')]
+    data = data[data[date_id].between(train_start, test_end, inclusive='both')].copy()
     data[target] = labels
 
     in_sample = data[data[date_id].between(train_start, train_end, inclusive='both')]
-    y_pred = in_sample.groupby(target)[base_label].mean().to_numpy()
-
     out_of_sample = data[data[date_id].between(test_start, test_end, inclusive='both')]
-    y_out = out_of_sample.groupby(target)[base_label].mean().to_numpy()
+    y_pred = in_sample.groupby(target)[base_label].mean()
+    y_out = out_of_sample.groupby(target)[base_label].mean()
+    y_out[y_out >= 0.5] = 1
+    y_out[y_out < 0.5] = 0
+    shared_idx = y_pred.index.intersection(y_out.index)
+    y_pred = y_pred[shared_idx].to_numpy()
+    y_out = y_out[shared_idx].to_numpy()
 
     return brier_score_loss(y_out, y_pred)
 
