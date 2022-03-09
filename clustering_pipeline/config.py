@@ -29,6 +29,7 @@ ID_COLUMNS = ['cal_day', 'bus_ptnr_group']
 
 BASE_LABEL_COLUMN = 'impaired'
 KMEANS_LABEL_COLUMN = 'kmeans_label'
+PAM_LABEL_COLUMN = 'kmedoids_label'
 
 # experiment settings
 TRAIN_PERIOD = ('2016-01-31', '2020-12-31')
@@ -39,8 +40,9 @@ TEST_PERIOD_LENGTH = 12    # months
 
 MODEL_PARAM = {
     'PCA': {'n_components': 0.95, 'random_state': None},
-    'KMeans': {'n_clusters': 20, 'random_state': None}
+    'KMeans': {'n_clusters': 20, 'random_state': None},
+    'KMedoids': {'n_medoids': 10}    # TODO add parameters
 }
 
-KMEANS_ID = MODEL_PARAM['KMeans']['n_clusters']
-PATH_KMEANS_RESULT = PATH_WORKING_DIR / Path(f'kmeans_with_{KMEANS_ID}_centers.csv')
+PATH_KMEANS_RESULT = PATH_WORKING_DIR / Path(f"kmeans_with_{MODEL_PARAM['KMeans']['n_clusters']}_centers.csv")
+PATH_PAM_RESULT = PATH_WORKING_DIR / Path(f"kmeans_with_{MODEL_PARAM['KMedoids']['n_medoids']}_centers.csv")

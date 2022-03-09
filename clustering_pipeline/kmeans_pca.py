@@ -12,23 +12,29 @@ from sklearn.cluster import KMeans
 
 
 class Model:
-    def __init__(self, parameters) -> None:
+    def __init__(self, method, parameters) -> None:
         """
+        method: "KMeans", "KMedoids", etc.
         parameters: dict('PCA': dict(...), 'KMeans': dict(...), ...)
         """
         self.logger = logging.getLogger(__name__)
+        self.method = method
         self.param = parameters
     
     def construct(self):
         pca_param = self.param['PCA']
-        kmeans_param = self.param['KMeans']
+        clustering_param = self.param[self.method]
+        if self.method == 'KMeans':
+            cluster = KMeans(**clustering_param)
+        elif self.method == 'KMedoids':
+            pass    # TODO add estimator
 
         self.ppl = Pipeline([
             ('PCA', PCA(**pca_param)),
             # ('scaling', StandardScaler()),
-            ('KMeans', KMeans(**kmeans_param)),
+            ('clustering', cluster)
         ])
-        self.logger.info(f"initialize the model pipeline: KMeans {kmeans_param['n_clusters']}")
+        self.logger.info(f"initialize {self.method} with n_clusters={clustering_param['n_clusters']}")
 
     def fit(self, X):
         """
@@ -47,7 +53,7 @@ class Model:
         return labels
 
 
-def generate_labels(data, train_period, test_period):
+def generate_labels(method, data, train_period, test_period):
     """
     data: pd.DataFrame; train_period, test_period: tuple(str, str)
     """
@@ -62,7 +68,7 @@ def generate_labels(data, train_period, test_period):
     test = df.loc[test_idx, features].to_numpy()
     logging.getLogger(__name__).info(f'split train and test with the size of {len(train)} and {len(test)}')
 
-    model = Model(config.MODEL_PARAM)
+    model = Model(method, config.MODEL_PARAM)
     model.fit(train)
 
     X = np.append(train, test, axis=0)
@@ -91,14 +97,22 @@ def mk_env(start_date, end_date, logging_file):
 
 
 if __name__ == '__main__':
+    method = 'KMeans'
+
     train_period = config.TRAIN_PERIOD
     test_period = config.TEST_PERIOD
-
-    loans_data = mk_env(train_period[0], test_period[1], 'kmeans_pca.log')
-
+    loans_data = mk_env(train_period[0], test_period[1], f'{method}_pca.log')
     logger = logging.getLogger(__name__)
 
-    labels = generate_labels(loans_data, train_period, test_period)
-    loans_data[config.KMEANS_LABEL_COLUMN] = labels
-    loans_data.to_csv(config.PATH_KMEANS_RESULT, index=False)
-    logger.info('store results')
+    labels = generate_labels(method, loans_data, train_period, test_period)
+    
+    if method == 'KMeans':
+        target = config.KMEANS_LABEL_COLUMN
+        saving_loc = config.PATH_KMEANS_RESULT
+    elif method == 'KMedoids':
+        target = config.PAM_LABEL_COLUMN
+        saving_loc = config.PATH_PAM_RESULT
+
+    loans_data[target] = labels
+    loans_data.to_csv(saving_loc, index=False)
+    logger.info(f'store results to {saving_loc}')
