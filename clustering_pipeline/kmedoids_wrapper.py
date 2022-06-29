@@ -22,7 +22,7 @@ class BanditPAM:
         self.cluster = KMedoids(**self.params)
         self.cluster.fit(X, 'L2')
 
-    def predict(self, X):    # FIXME get fitted model's predictions
+    def predict(self, X):    # get fitted model's predictions
         # self.fit(X)
         labels = self.cluster.labels
         return labels

@@ -2,7 +2,7 @@ import logging
 import config as config
 import numpy as np
 import pandas as pd
-# import category_encoders as ce
+import category_encoders as ce
 
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer

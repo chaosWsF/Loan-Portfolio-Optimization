@@ -6,6 +6,7 @@ import config as config
 from pathlib import Path
 
 
+# Set working directory in config file
 working_dir = config.PATH_WORKING_DIR
 working_dir.mkdir(exist_ok=True)
 
@@ -19,6 +20,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# formatting codes may need changing for a different version of dataset 
 data_path = working_dir / 'datasetv12_*.csv'
 dtypes = {
     'BRR': 'float64',
@@ -48,6 +50,7 @@ logger.info(f'drop columns with missing values > 90%')
 data.drop(columns=['syndicated_loan', 'trend_code'], inplace=True)
 logger.info(f'drop imbalanced categorical columns')
 
+# Set the time range of used period
 start_date = '2013-01-31'
 end_date = '2021-12-31'
 data['cal_day'] = pd.to_datetime(data['cal_day'], errors='coerce')

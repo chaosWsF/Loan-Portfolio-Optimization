@@ -30,10 +30,8 @@ def model_eval(method, data, train_period, test_period):
     base_label = config.BASE_LABEL_COLUMN
     if method == 'KMeans':
         target = config.KMEANS_LABEL_COLUMN
-    elif method == 'KMedoids':
+    else:    # 'KMedoids'
         target = config.PAM_LABEL_COLUMN
-    else:    # TODO other methods
-        pass
 
     train_start, train_end = train_period
     test_start, test_end = test_period
@@ -56,8 +54,8 @@ def model_eval(method, data, train_period, test_period):
 
 
 if __name__ == '__main__':
-    # method = 'KMeans'
-    method = 'KMedoids'
+    method = 'KMeans'
+    # method = 'KMedoids'
 
     train_period = config.INITIAL_TRAIN_PERIOD
     test_period = get_test_period(train_period)

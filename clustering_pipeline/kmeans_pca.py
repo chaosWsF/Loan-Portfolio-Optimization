@@ -30,10 +30,11 @@ class Model:
             cluster = KMeans(**clustering_param)
         elif self.method == 'KMedoids':
             cluster = KMedoids(**clustering_param)
+            # cluster = BanditPAM(**clustering_param)
 
         self.ppl = Pipeline([
             ('PCA', PCA(**pca_param)),
-            # ('scaling', StandardScaler()),
+            ('scaling', StandardScaler()),
             ('clustering', cluster)
         ])
         self.logger.info(f"initialize {self.method} {clustering_param['n_clusters']}")
@@ -63,8 +64,9 @@ def generate_labels(method, data, train_period, test_period):
 
     Preprocessor = DataPreprocessor()
     df, features = Preprocessor.transform(data)
-    # TODO: add save check for preprocessed data
-    
+    df.to_parquet(config.PATH_PREPROCESSED_DATA)
+    logging.getLogger(__name__).info('save preprocessed data')
+
     train_idx = df[date_id].between(*train_period, inclusive='both')
     train = df.loc[train_idx, features].to_numpy()
     test_idx = df[date_id].between(*test_period, inclusive='both')
@@ -100,8 +102,8 @@ def mk_env(start_date, end_date, logging_file):
 
 
 if __name__ == '__main__':
-    # method = 'KMeans'
-    method = 'KMedoids'
+    method = 'KMeans'
+    # method = 'KMedoids'
 
     train_period = config.TRAIN_PERIOD
     test_period = config.TEST_PERIOD
