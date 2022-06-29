@@ -22,3 +22,7 @@
                     # 'KMedoids': {'n_medois': 20},
                 }
             ```
+
+## Analysis of Results
+
+    Use `cluster_analysis.ipynb`
