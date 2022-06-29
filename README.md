@@ -14,7 +14,9 @@
 
 If using `KMedoids` from `banditpam`, 
 
-- we need to wrap the original function for the sklearn-used ability (failed in `kmedoids_wrapper.py`)
+- we need to wrap the original function for the sklearn-used ability
+  - failed in `kmedoids_wrapper.py`
+  - There seems to be a solution: https://github.com/ThrunGroup/BanditPAM/issues/185
 - also uncomment the last line of the following section in the config file:
    ```
        MODEL_PARAM = {
