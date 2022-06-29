@@ -43,7 +43,7 @@ MODEL_PARAM = {
     'PCA': {'n_components': 0.95},
     'KMeans': {'n_clusters': 20},
     'KMedoids': {'n_clusters': 20},
-    # 'KMedoids': {'n_medois': 20},
+    # 'KMedoids': {'n_medois': 20}
 }
 
 PATH_KMEANS_RESULT = PATH_WORKING_DIR / Path(f"kmeans_with_{MODEL_PARAM['KMeans']['n_clusters']}_centers.csv")
